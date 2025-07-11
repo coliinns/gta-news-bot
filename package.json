@@ -1,0 +1,16 @@
+{
+  "name": "gta-news-bot",
+  "version": "1.0.0",
+  "description": "Bot Discord para notícias de GTA Online da Rockstar",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.0.0",
+    "rss-parser": "^3.12.0",
+    "node-fetch": "^2.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.0.0"
+  }
+}
