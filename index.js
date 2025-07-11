@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+// Variável para controlar última notícia postada
+// Para teste, não vamos usar para impedir postagens repetidas
 let lastPostedLink = "";
 
 client.once('ready', () => {
@@ -19,7 +21,6 @@ async function checkNews() {
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    // Seleciona as notícias listadas na página
     const newsItems = $(".NewswireList-item");
 
     for (let i = 0; i < newsItems.length; i++) {
@@ -29,23 +30,17 @@ async function checkNews() {
       const linkPartial = el.find("a").attr("href");
       const link = "https://www.rockstargames.com" + linkPartial;
 
-      // Filtra só notícias de GTA Online (case insensitive)
       if (!title.toLowerCase().includes("gta online")) continue;
 
-      if (link === lastPostedLink) break; // já postamos essa notícia
+      // Para teste, comentamos a verificação para postar sempre
+      // if (link === lastPostedLink) break;
 
       lastPostedLink = link;
 
-      // Pega imagem da notícia
       const img = el.find("img").attr("src") || null;
-
-      // Pega o resumo do texto da notícia
       const summary = el.find(".NewswireList-summary").text().trim();
-
-      // Traduz o resumo para português
       const translated = await translateText(summary, "pt");
 
-      // Cria embed e envia
       const embed = new EmbedBuilder()
         .setTitle(title)
         .setDescription(translated)
@@ -59,9 +54,9 @@ async function checkNews() {
       await channel.send({ embeds: [embed] });
 
       console.log("📰 Notícia postada:", title);
+
       break; // só posta a notícia mais recente por rodada
     }
-
   } catch (err) {
     console.error("Erro ao buscar ou enviar notícia:", err);
   }
